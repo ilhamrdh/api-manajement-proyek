@@ -1,0 +1,75 @@
+project:
+	name
+	key(id)
+	workspace_id(harus yang 1 workspace)
+
+project_has_people:
+	id
+	project_key
+	people_id
+	role
+
+sprints:
+	sprint_key(varchar(10))
+	sprint_name(varchar(50))
+	duration(int(11))
+	start_date(date)
+	end_date(date) | (otomatis kalau duration != custom)
+	sprint_goal(text)
+	status(enum['not_start','on_progress','completed'])
+
+project_has_sprint:
+	project_key
+	sprint_key
+
+backlog:
+	sprint_key
+	sprint_name
+	duration
+	start_date
+	end_date(otomatis kalau duration != custom)
+	sprint_goal
+	status
+task:
+	task_key
+	task_name
+	task_description
+	assigne
+	reporter
+
+task_has_attachment
+	id
+	task_key
+	attach_file
+
+child_task:
+	id
+	task_key
+	task_name
+	task_description
+	assigne
+	reporter
+
+task_status:
+	status_key
+	status_name
+
+task_has_comment:
+	id
+	task_key
+	comment
+	commenter
+	created_at
+
+
+history:
+	id
+	subject
+	activity
+	object
+	timestamp
+	
+task_has_history:
+	id
+	task_key:
+	history_id:
