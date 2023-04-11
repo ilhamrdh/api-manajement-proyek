@@ -61,7 +61,6 @@ task_has_comment:
 	commenter
 	created_at
 
-
 history:
 	id
 	subject
