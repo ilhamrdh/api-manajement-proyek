@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Key</title>
+</head>
+
+<body>
+    <script>
+        const projectKey = (name_project) => {
+            const name = name_project.split(" ");
+            let result = "";
+            if (name.length > 1) {
+                result = `First Character : ${name.map(word => word[0]).join("")}`;
+            } else if (name_project.match(/[A-Z]/g)) {
+                result = `Huruf Besar: ${name_project.match(/[A-Z]/g).join("")}`;
+            } else if (name.length === 1) {
+                result = `3 Huruf Pertama : ${name.map(word => word[1]).join("") && name[0].slice(0, 3)}`;
+            }
+            return result;
+        }
+        console.log(projectKey("Project Manajemen Proyek"));
+        console.log(projectKey("ProjectManaJemenProyek"));
+        console.log(projectKey("project"));
+
+        const kalimat = "testSprint";
+        const hasil = kalimat.length === 1 ? kalimat[0].slice(0, 3) : (/[A-Z]/.test(kalimat) ? kalimat[0] + kalimat.match(/[A-Z]/g).join('') : "");
+        console.log(hasil);
+    </script>
+</body>
+
+</html>

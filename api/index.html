@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Key</title>
+</head>
+
+<body>
+    <p>Project 1 : </p>
+    <p id="demo">Ini adalah kalimat contoh</p>
+    <script>
+        const projectKey = (kalimat) => {
+            const kataKata = kalimat.split(" ");
+            let hasil = "";
+            if (kataKata.length > 1) {
+                hasil = kataKata.map(kata => kata[0]).join("");
+            } else if (kataKata.length === 1) {
+                hasil = kataKata[0].slice(0, 3);
+            }
+            return hasil;
+        }
+        console.log(projectKey("Project Manajeman Proyek")); // Iakc
+        console.log(projectKey("Project")); // Sat
+
+        function ambilHurufBesar(kalimat) {
+            const hurufBesar = kalimat.match(/[A-Z]/g);
+            let hasil = "";
+
+            if (hurufBesar) {
+                hasil = hurufBesar.join("");
+            }
+
+            return hasil;
+        }
+        // Contoh penggunaan:
+        console.log(ambilHurufBesar("TestSprint")); // IKC
+        console.log(ambilHurufBesar("KATA")); // KATA
+
+        function ambilInfoTeks(kalimat) {
+            let hasil = "";
+            if (kalimat.indexOf(" ") !== -1) {
+                // Jika kalimat terdiri dari lebih dari satu kata
+                const kataKapital = kalimat.split(" ").map(kata => kata[0]).join("");
+                const hurufBesar = kalimat.match(/[A-Z]/g);
+                hasil = `Kata Kapital: ${kataKapital}, Huruf Besar: ${hurufBesar ? hurufBesar.join("") : ''}`;
+            } else {
+                // Jika kalimat hanya terdiri dari satu kata
+                hasil = `3 Huruf Pertama: ${kalimat.substring(0, 3)}`;
+            }
+            return hasil;
+        }
+        // Contoh penggunaan:
+        console.log(ambilInfoTeks("ini adalah kalimat contoh")); // Kata Kapital: IaKC, Huruf Besar: IKC
+        console.log(ambilInfoTeks("KATA")); // 3 Huruf Pertama: KAT
+        console.log(ambilInfoTeks("Kalimat")); // 3 Huruf Pertama: Kal, Huruf Besar: K
+    </script>
+</body>
+
+</html>
