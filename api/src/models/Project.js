@@ -3,15 +3,15 @@ import db from "../configs/connection.js";
 
 const { DataTypes } = Sequelize;
 
-const Organization = db.define(
-    "organizations",
+const Project = db.define(
+    "projects",
     {
-        orgKey: {
+        projectKey: {
             type: DataTypes.STRING,
             unique: true,
             allowNull: false,
         },
-        name_organization: {
+        name_project: {
             type: DataTypes.STRING,
             allowNull: false,
             validate: {
@@ -23,5 +23,4 @@ const Organization = db.define(
         freezeTableName: true,
     }
 );
-
-export default Organization;
+export default Project;

@@ -1,74 +1,76 @@
-project:
-	name
-	key(id)
-	workspace_id(harus yang 1 workspace)
+user:
+	user_key(varchar(10))
+	org_key(varchar(10))
+	username(varchar(100))
+	email(varchar(50))
+	password(varchar(255))
+	role("admin","user)
 
-project_has_people:
-	id
-	project_key
-	people_id
-	role
+organization:
+	org_key(varchar(10))
+	org_name(varchar(50))
+
+workspace:
+	key(varchar(10))
+	org_key(varchar(10))
+	name(varchar(50))
+
+teams:
+	key(varchar(10))
+	workspace_key(varchar(10))
+	name(varchar(50))
+
+team_member:
+	member_key(varchar(10))
+	team_key(varchar(10))
+	role(varchar(10))
+
+team_has_project:
+	id(int(11))
+	team_key(varchar(10))
+	project_key(varchar(10))
+
+project:
+	key(varchar(10))
+	name(varchar(100))
 
 sprints:
 	sprint_key(varchar(10))
+	project_key(varchar(10))
 	sprint_name(varchar(50))
 	duration(int(11))
 	start_date(date)
 	end_date(date) | (otomatis kalau duration != custom)
 	sprint_goal(text)
-	status(enum['not_start','on_progress','completed'])
+	status(enum['not_start','on_progress','completed']
 
-project_has_sprint:
-	project_key
-	sprint_key
+tasks:
+	task_key(varchar(10))
+	task_name(varchar(100))
+	task_description(text)
+	assigne(relation to member_key)(varchar(10))
+	reporter(relation to member_key)(varchar(10))
+	status(varchar(100))(default: backlog)
+	parent_key(varchar(10))(default:null)
+	flag(boolean)
 
-backlog:
-	sprint_key
-	sprint_name
-	duration
-	start_date
-	end_date(otomatis kalau duration != custom)
-	sprint_goal
-	status
-task:
-	task_key
-	task_name
-	task_description
-	assigne
-	reporter
-
-task_has_attachment
+voted_tasks:
 	id
-	task_key
-	attach_file
-
-child_task:
-	id
-	task_key
-	task_name
-	task_description
-	assigne
-	reporter
-
-task_status:
-	status_key
-	status_name
-
-task_has_comment:
-	id
-	task_key
-	comment
-	commenter
-	created_at
-
-history:
-	id
-	subject
-	activity
-	object
-	timestamp
+	task_key(varchar(10))
+	user_key(varchar(10))
 	
-task_has_history:
-	id
-	task_key:
-	history_id:
+
+task_attachment:
+	id(int(11))
+	task_key(varchar(10))
+	attach_name(varchar(100))
+	attach_file(varchar(255))
+	upload_by(varchar(10)) -> ambil id user yg upload file
+
+task_comment_history:
+	id(int(11))
+	task_key(varchar(10))
+	type(enum['comment','history'])
+	action(text)
+	user_id(relation to member_key)(varchar(10))
+	created_at(datetime)

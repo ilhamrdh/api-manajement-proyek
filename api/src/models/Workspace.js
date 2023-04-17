@@ -1,17 +1,18 @@
 import { Sequelize } from "sequelize";
 import db from "../configs/connection.js";
+import Organization from "./Organization.js";
 
 const { DataTypes } = Sequelize;
 
-const Organization = db.define(
-    "organizations",
+const Workspace = db.define(
+    "workspaces",
     {
-        orgKey: {
+        workKey: {
             type: DataTypes.STRING,
             unique: true,
             allowNull: false,
         },
-        name_organization: {
+        name_workspace: {
             type: DataTypes.STRING,
             allowNull: false,
             validate: {
@@ -19,9 +20,10 @@ const Organization = db.define(
             },
         },
     },
-    {
-        freezeTableName: true,
-    }
+    { freezeTableName: true }
 );
 
-export default Organization;
+// Organization.hasMany(Workspace, { foreignKey: "org_key", sourceKey: "orgKey" });
+// Workspace.belongsTo(Organization, { foreignKey: "org_key" });
+
+export default Workspace;

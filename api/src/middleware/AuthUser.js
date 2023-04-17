@@ -13,10 +13,10 @@ export const checkAuth = (req, res, next) => {
         const { id } = paload;
         const user = await User.findOne({
             where: {
-                uuid: id,
+                id: id,
             },
         });
-        req.userId = user.uuid;
+        req.userId = user.id;
         req.role = user.role;
         next();
     });

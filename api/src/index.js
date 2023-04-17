@@ -7,9 +7,9 @@ import UserRouter from "./routers/user.js";
 import AuthRouter from "./routers/auth.js";
 import OrgRouter from "./routers/organization.js";
 import WorkRouter from "./routers/workspace.js";
-import ProjectRouter from "./routers/project.js";
-import SprintRouter from "./routers/sprint.js";
-import TaskRouter from "./routers/task.js";
+// import ProjectRouter from "./routers/project.js";
+// import SprintRouter from "./routers/sprint.js";
+// import TaskRouter from "./routers/task.js";
 
 dotenv.config();
 
@@ -30,14 +30,14 @@ app.use((error, req, res, next) => {
 });
 
 app.use("/api/auth", AuthRouter);
-app.use("/api/users", UserRouter);
+app.use("/api/user", UserRouter);
 app.use("/api/organization", OrgRouter);
-// app.use("/api/workspaces", WorkRouter);
+app.use("/api/workspace", WorkRouter);
 // app.use("/api/project", ProjectRouter);
 // app.use("/api/sprint", SprintRouter);
 // app.use("/api/task", TaskRouter);
 
-// db.sync({ force: true })
+// db.sync({ force: false })
 //     .then(() => {
 //         console.log("Database Connection");
 //     })

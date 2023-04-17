@@ -1,9 +1,10 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
-import User from "../models/User.js";
+import { Organization, User } from "../models/index.js";
 import sendEmail from "../utils/sendEmail.js";
-import { Organization, OrganizationHasUser } from "../models/Organization.js";
+import { keyUser } from "../utils/generateKey.js";
+import { Sequelize } from "sequelize";
 
 export const register = async (req, res, next) => {
     const { username, email, password, role } = req.body;
@@ -11,33 +12,44 @@ export const register = async (req, res, next) => {
         const salt = bcrypt.genSaltSync(10);
         const hash = bcrypt.hashSync(password, salt);
         const checkUsername = await User.findOne({
-            where: { username: username },
+            where: {
+                username: Sequelize.where(
+                    Sequelize.fn("LOWER", Sequelize.col("username")),
+                    Sequelize.fn("LOWER", username)
+                ),
+            },
         });
         if (checkUsername) {
             return res.status(409).json({ message: "username already" });
         }
         const checkEmail = await User.findOne({
-            where: { email: email },
+            where: {
+                email: Sequelize.where(
+                    Sequelize.fn("LOWER", Sequelize.col("email")),
+                    Sequelize.fn("LOWER", email)
+                ),
+            },
         });
         if (checkEmail) {
             return res.status(409).json({ message: "email already" });
         }
+        const organization = await Organization.create({
+            orgKey: "ORG",
+            name_organization: username + "_org",
+        });
+        await organization.update({ orgKey: `ORG-${organization.id}` });
         const user = await User.create({
+            userKey: crypto.randomBytes(10).toString("hex"),
             username: username,
             email: email.toLowerCase(),
             password: hash,
             role: role,
-            emailToken: crypto.randomBytes(64).toString("hex"),
+            email_token: crypto.randomBytes(64).toString("hex"),
+            org_key: organization.orgKey,
         });
-        const organization = await Organization.create({
-            name_organization: username + "_org",
+        await user.update({
+            userKey: `USER-${user.id}`,
         });
-        await OrganizationHasUser.create({
-            organizationKey: organization.uuid,
-            userKey: user.uuid,
-            role: role,
-        });
-
         let subject = "Verify your email";
         let content = `
         <div style="max-width:520px;margin:0 auto">
@@ -46,7 +58,7 @@ export const register = async (req, res, next) => {
                     You're nearly there!</h1>
                 <p style="color:#091e42;line-height:20px;margin-top:12px">Hi ${username},</p>
                 <p style="color:#091e42;line-height:20px;margin-top:12px">Please verify your mail to continue...</p>
-                <a href="http://localhost:9000/api/users/verify-email?token=${user.emailToken}"
+                <a href="http://localhost:9000/api/users/verify-email?token=${user.email_token}"
                     style="box-sizing:border-box;border-radius:3px;border-width:0;border:none;display:inline-flex;font-style:normal;font-size:inherit;line-height:24px;margin:0;outline:none;padding:4px 12px;text-align:center;vertical-align:middle;white-space:nowrap;text-decoration:none;background:#0052cc;color:#ffffff;">
                     Verify your email</a>
             </div>
@@ -56,9 +68,8 @@ export const register = async (req, res, next) => {
         res.status(201).json({
             message: "Register successfuly",
             data: {
-                username: user.username,
-                email: user.email,
-                email_token: user.emailToken,
+                organization: organization,
+                user: user,
             },
         });
     } catch (error) {
@@ -84,7 +95,9 @@ export const login = async (req, res, next) => {
                 .json({ message: "wrong password or username" });
         }
         const payload = {
-            id: user.uuid,
+            id: user.id,
+            userKey: user.userKey,
+            role: user.role,
         };
         const token = jwt.sign(payload, process.env.JWT_SECRET, {
             expiresIn: 24 * 17 * 60 * 60 * 60,
@@ -101,19 +114,32 @@ export const login = async (req, res, next) => {
 };
 
 export const Me = async (req, res, next) => {
-    const user = await User.findOne({
-        attributes: ["uuid", "username", "email", "role"],
-        where: {
-            uuid: req.userId,
-        },
-    });
-    if (!user) {
-        return res.status(404).json({ message: "User not found" });
+    try {
+        const user = await User.findOne({
+            attributes: ["username", "email", "role"],
+            where: {
+                id: req.userId,
+            },
+        });
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        res.status(200).json({ data: user });
+    } catch (error) {
+        next(error);
     }
-    res.status(200).json({ data: user });
 };
 
 export const logOut = async (req, res, next) => {
-    res.clearCookie("access_token");
-    res.status(200).json({ message: "success logout" });
+    const loggedIn = req.cookies.access_token;
+    try {
+        if (loggedIn) {
+            res.clearCookie("access_token");
+            res.status(200).json({ message: "success logout" });
+        } else {
+            res.status(401).json({ message: "not login" });
+        }
+    } catch (error) {
+        next(error);
+    }
 };

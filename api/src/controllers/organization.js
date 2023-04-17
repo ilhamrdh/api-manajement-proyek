@@ -1,23 +1,15 @@
-import { Organization, OrganizationHasUser } from "../models/Organization.js";
+import { Organization, User } from "../models/index.js";
 
-export const listAnggotaOrganization = async (req, res, next) => {
+export const anggotaOrganization = async (req, res, next) => {
+    const orgKey = req.params.orgKey;
     try {
-        const organization = await Organization.findOne({
-            where: { uuid: req.params.id },
-        });
-        if (!organization) {
-            return res.status(404).json({ message: "organization not found" });
-        }
-        const organizationHasUser = await OrganizationHasUser.findAll({
-            attributes: ["userKey"],
-            where: { organizationKey: organization.uuid },
-        });
-        res.status(200).json({
-            data: {
-                name_organization: organization.name_organization,
-                anggota: organizationHasUser,
+        const user = await User.findAll({
+            attributes: ["username", "email", "role"],
+            where: {
+                org_key: orgKey,
             },
         });
+        res.status(200).json({ data: user });
     } catch (error) {
         next(error);
     }

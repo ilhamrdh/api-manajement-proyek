@@ -1,16 +1,16 @@
 import { Sequelize } from "sequelize";
 import db from "../configs/connection.js";
+import Organization from "./Organization.js";
 
 const { DataTypes } = Sequelize;
 
 const User = db.define(
     "users",
     {
-        uuid: {
+        userKey: {
             type: DataTypes.STRING,
-            defaultValue: DataTypes.UUIDV4,
             unique: true,
-            allowNull: false,
+            allowNull: true,
         },
         username: {
             type: DataTypes.STRING,
@@ -51,7 +51,7 @@ const User = db.define(
                 notEmpty: false,
             },
         },
-        emailToken: {
+        email_token: {
             type: DataTypes.STRING,
         },
     },
@@ -59,5 +59,8 @@ const User = db.define(
         freezeTableName: true,
     }
 );
+
+// Organization.hasMany(User, { foreignKey: "org_key", sourceKey: "orgKey" });
+// User.belongsTo(Organization, { foreignKey: "org_key" });
 
 export default User;
