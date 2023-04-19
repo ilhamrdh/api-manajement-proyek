@@ -48,14 +48,25 @@ export const verifyEmail = async (req, res, next) => {
         const user = await User.findOne({
             where: { email: req.body.email },
         });
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "Email not found",
+            });
+        }
         if (user.verified) {
             next();
         } else {
             res.status(401).json({
+                success: false,
                 message: "Please check your email to verify account",
             });
         }
     } catch (error) {
-        next(error);
+        res.status(500).json({
+            success: false,
+            message: "Internal server error",
+            error: error.message,
+        });
     }
 };
