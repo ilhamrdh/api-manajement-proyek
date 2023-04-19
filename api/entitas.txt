@@ -42,7 +42,7 @@ sprints:
 	start_date(date)
 	end_date(date) | (otomatis kalau duration != custom)
 	sprint_goal(text)
-	status(enum['not_start','on_progress','completed']
+	status(enum['not_start','on_progress','completed'])
 
 tasks:
 	task_key(varchar(10))
