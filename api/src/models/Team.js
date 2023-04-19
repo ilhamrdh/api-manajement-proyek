@@ -3,7 +3,7 @@ import db from "../configs/connection.js";
 
 const { DataTypes } = Sequelize;
 
-export const Team = db.define(
+const Team = db.define(
     "teams",
     {
         teamKey: {
@@ -23,7 +23,7 @@ export const Team = db.define(
         freezeTableName: true,
     }
 );
-export const TeamMember = db.define(
+const TeamMember = db.define(
     "team_member",
     {
         memberKey: {
@@ -43,10 +43,12 @@ export const TeamMember = db.define(
         freezeTableName: true,
     }
 );
-export const TeamHasProject = db.define(
+const TeamHasProject = db.define(
     "team_has_project",
     {},
     {
         freezeTableName: true,
     }
 );
+
+export { Team, TeamMember, TeamHasProject };

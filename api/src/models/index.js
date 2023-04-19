@@ -3,6 +3,8 @@ import User from "./User.js";
 import Workspace from "./Workspace.js";
 import { Team, TeamMember, TeamHasProject } from "./Team.js";
 import Project from "./Project.js";
+import Sprint from "./Sprint.js";
+import { Task } from "./Task.js";
 
 Organization.hasMany(User, { foreignKey: "org_key", sourceKey: "orgKey" });
 User.belongsTo(Organization, { foreignKey: "org_key" });
@@ -24,6 +26,9 @@ Project.hasMany(TeamHasProject, {
 });
 TeamHasProject.belongsTo(Project, { foreignKey: "project_key" });
 
+Project.hasMany(Sprint, { foreignKey: "project_key", sourceKey: "projectKey" });
+Sprint.belongsTo(Project, { foreignKey: "project_key" });
+
 export {
     User,
     Organization,
@@ -32,4 +37,6 @@ export {
     TeamMember,
     TeamHasProject,
     Project,
+    Sprint,
+    Task,
 };
