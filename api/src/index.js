@@ -7,9 +7,10 @@ import UserRouter from "./routers/user.js";
 import AuthRouter from "./routers/auth.js";
 import OrgRouter from "./routers/organization.js";
 import WorkRouter from "./routers/workspace.js";
-// import ProjectRouter from "./routers/project.js";
-// import SprintRouter from "./routers/sprint.js";
-// import TaskRouter from "./routers/task.js";
+import TeamRouter from "./routers/team.js";
+import ProjectRouter from "./routers/project.js";
+import SprintRouter from "./routers/sprint.js";
+import TaskRouter from "./routers/task.js";
 
 dotenv.config();
 
@@ -24,7 +25,7 @@ app.use(cookieParser());
 
 // error handling
 app.use((error, req, res, next) => {
-    console.log(error);
+    console.log(error.statusCode);
     const status = error.statusCode || 500;
     res.status(status).json({ message: error.message });
 });
@@ -33,9 +34,10 @@ app.use("/api/auth", AuthRouter);
 app.use("/api/user", UserRouter);
 app.use("/api/organization", OrgRouter);
 app.use("/api/workspace", WorkRouter);
-// app.use("/api/project", ProjectRouter);
-// app.use("/api/sprint", SprintRouter);
-// app.use("/api/task", TaskRouter);
+app.use("/api/team", TeamRouter);
+app.use("/api/project", ProjectRouter);
+app.use("/api/sprint", SprintRouter);
+app.use("/api/task", TaskRouter);
 
 // db.sync({ force: false })
 //     .then(() => {

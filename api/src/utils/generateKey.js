@@ -1,20 +1,16 @@
-export const keyUser = (input) => {
-    input = input.replace(/[^A-Za-z]/g, "");
-    if (input === input.toLowerCase()) {
-        return input.slice(0, 3);
-    } else if (/[A-Z]/.test(input)) {
-        let uppercase = "";
-        for (let i = 0; i < input.length; i++) {
-            if (input[i] === input[i].toUpperCase()) {
-                uppercase += input[i];
+const key = (name) => {
+    let result = "";
+    const kata = name.split(/[.,_\-\s]/);
+    if (kata.length > 1) {
+        kata.forEach((k) => {
+            if (k !== "") {
+                result += k[0].toUpperCase();
             }
-        }
-        if (uppercase.length < 3) {
-            return input.slice(0, 1) + uppercase;
-        } else {
-            return uppercase.slice(0, 3);
-        }
+        });
     } else {
-        return input.slice(0, 3);
+        result = kata[0].slice(0, 3).toUpperCase();
     }
+    return result;
 };
+
+export { key };

@@ -6,12 +6,19 @@ const { DataTypes } = Sequelize;
 const Team = db.define(
     "teams",
     {
-        teamKey: {
+        team_key: {
             type: DataTypes.STRING,
             unique: true,
             allowNull: false,
         },
-        name_team: {
+        team_name: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            validate: {
+                notEmpty: true,
+            },
+        },
+        work_key: {
             type: DataTypes.STRING,
             allowNull: false,
             validate: {
@@ -26,12 +33,26 @@ const Team = db.define(
 const TeamMember = db.define(
     "team_member",
     {
-        memberKey: {
+        member_key: {
             type: DataTypes.STRING,
             unique: true,
             allowNull: false,
         },
         role: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            validate: {
+                notEmpty: true,
+            },
+        },
+        team_key: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            validate: {
+                notEmpty: true,
+            },
+        },
+        user_key: {
             type: DataTypes.STRING,
             allowNull: false,
             validate: {
@@ -45,7 +66,22 @@ const TeamMember = db.define(
 );
 const TeamHasProject = db.define(
     "team_has_project",
-    {},
+    {
+        team_key: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            validate: {
+                notEmpty: true,
+            },
+        },
+        project_key: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            validate: {
+                notEmpty: true,
+            },
+        },
+    },
     {
         freezeTableName: true,
     }

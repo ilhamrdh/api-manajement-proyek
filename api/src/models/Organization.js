@@ -6,12 +6,12 @@ const { DataTypes } = Sequelize;
 const Organization = db.define(
     "organizations",
     {
-        orgKey: {
+        org_key: {
             type: DataTypes.STRING,
             unique: true,
             allowNull: false,
         },
-        name_organization: {
+        organization_name: {
             type: DataTypes.STRING,
             allowNull: false,
             validate: {

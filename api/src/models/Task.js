@@ -6,12 +6,12 @@ const { DataTypes } = Sequelize;
 const Task = db.define(
     "tasks",
     {
-        taskKey: {
+        task_key: {
             type: DataTypes.STRING,
             unique: true,
             allowNull: false,
         },
-        name_team: {
+        task_name: {
             type: DataTypes.STRING,
             allowNull: false,
             validate: {
@@ -21,7 +21,7 @@ const Task = db.define(
         task_description: {
             type: DataTypes.TEXT,
         },
-        assigne: {
+        assignee: {
             type: DataTypes.STRING,
             allowNull: false,
             validate: {
@@ -59,4 +59,93 @@ const Task = db.define(
     { freezeTableName: true }
 );
 
-export { Task };
+const VotedTask = db.define(
+    "voted_tasks",
+    {
+        task_key: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            validate: {
+                notEmpty: true,
+            },
+        },
+        user_key: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            validate: {
+                notEmpty: true,
+            },
+        },
+    },
+    { freezeTableName: true }
+);
+
+const TaskAttachement = db.define(
+    "task_attachment",
+    {
+        attach_name: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            validate: {
+                notEmpty: true,
+            },
+        },
+        attach_file: {
+            type: DataTypes.STRING,
+        },
+        upload_by: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            validate: {
+                notEmpty: true,
+            },
+        },
+        task_key: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            validate: {
+                notEmpty: true,
+            },
+        },
+    },
+    { freezeTableName: true }
+);
+const TaskCommentHistory = db.define(
+    "task_comment_history",
+    {
+        action: {
+            type: DataTypes.TEXT,
+            validate: {
+                notEmpty: true,
+            },
+        },
+        type: {
+            type: DataTypes.ENUM,
+            values: ["comment", "history"],
+            allowNull: false,
+            validate: {
+                isIn: {
+                    args: [["comment", "history"]],
+                    msg: "must be comment, or history",
+                },
+            },
+        },
+        task_key: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            validate: {
+                notEmpty: true,
+            },
+        },
+        user_key: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            validate: {
+                notEmpty: true,
+            },
+        },
+    },
+    { freezeTableName: true }
+);
+
+export { Task, VotedTask, TaskAttachement, TaskCommentHistory };

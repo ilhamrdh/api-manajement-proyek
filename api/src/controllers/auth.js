@@ -1,9 +1,8 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
-import { Organization, User } from "../models/index.js";
 import sendEmail from "../utils/sendEmail.js";
-import { keyUser } from "../utils/generateKey.js";
+import { Organization, User } from "../models/index.js";
 import { Sequelize } from "sequelize";
 
 export const register = async (req, res, next) => {
@@ -20,7 +19,10 @@ export const register = async (req, res, next) => {
             },
         });
         if (checkUsername) {
-            return res.status(409).json({ message: "username already" });
+            return res.status(409).json({
+                success: false,
+                message: "username already",
+            });
         }
         const checkEmail = await User.findOne({
             where: {
@@ -31,24 +33,27 @@ export const register = async (req, res, next) => {
             },
         });
         if (checkEmail) {
-            return res.status(409).json({ message: "email already" });
+            return res.status(409).json({
+                success: false,
+                message: "Email already",
+            });
         }
         const organization = await Organization.create({
-            orgKey: "ORG",
-            name_organization: username + "_org",
+            org_key: "ORG",
+            organization_name: username + "_org",
         });
-        await organization.update({ orgKey: `ORG-${organization.id}` });
+        await organization.update({ org_key: `ORG-${organization.id}` });
         const user = await User.create({
-            userKey: crypto.randomBytes(10).toString("hex"),
+            user_key: crypto.randomBytes(10).toString("hex"),
             username: username,
             email: email.toLowerCase(),
             password: hash,
             role: role,
             email_token: crypto.randomBytes(64).toString("hex"),
-            org_key: organization.orgKey,
+            org_key: organization.org_key,
         });
         await user.update({
-            userKey: `USER-${user.id}`,
+            user_key: `USER-${user.id}`,
         });
         let subject = "Verify your email";
         let content = `
@@ -66,14 +71,16 @@ export const register = async (req, res, next) => {
         `;
         sendEmail(email, subject, content);
         res.status(201).json({
-            message: "Register successfuly",
-            data: {
-                organization: organization,
-                user: user,
-            },
+            success: true,
+            message: "Successed register",
+            data: user.email,
         });
     } catch (error) {
-        next(error);
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+            error: error.message,
+        });
     }
 };
 
@@ -82,21 +89,28 @@ export const login = async (req, res, next) => {
     try {
         const user = await User.findOne({
             where: {
-                email: email,
+                email: Sequelize.where(
+                    Sequelize.fn("LOWER", Sequelize.col("email")),
+                    Sequelize.fn("LOWER", email)
+                ),
             },
         });
         if (!user) {
-            return res.status(404).json({ message: "email not found" });
+            return res.status(404).json({
+                success: false,
+                message: "Email not found",
+            });
         }
         const isPasswordCorrect = await bcrypt.compare(password, user.password);
         if (!isPasswordCorrect) {
-            return res
-                .status(400)
-                .json({ message: "wrong password or username" });
+            return res.status(400).json({
+                success: false,
+                message: "Wrong password or username",
+            });
         }
         const payload = {
             id: user.id,
-            userKey: user.userKey,
+            user_key: user.user_key,
             role: user.role,
         };
         const token = jwt.sign(payload, process.env.JWT_SECRET, {
@@ -107,9 +121,17 @@ export const login = async (req, res, next) => {
             maxAge: 24 * 17 * 60 * 60 * 60,
         })
             .status(201)
-            .json({ message: "successfuly login", username: user.username });
+            .json({
+                success: true,
+                message: "Login successfuly",
+                username: user.username,
+            });
     } catch (error) {
-        next(error);
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+            error: error.message,
+        });
     }
 };
 
@@ -124,9 +146,17 @@ export const Me = async (req, res, next) => {
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
-        res.status(200).json({ data: user });
+        res.status(200).json({
+            success: true,
+            message: "Profile",
+            data: user,
+        });
     } catch (error) {
-        next(error);
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+            error: error.message,
+        });
     }
 };
 
@@ -135,11 +165,21 @@ export const logOut = async (req, res, next) => {
     try {
         if (loggedIn) {
             res.clearCookie("access_token");
-            res.status(200).json({ message: "success logout" });
+            res.status(200).json({
+                success: true,
+                message: "Successed logout",
+            });
         } else {
-            res.status(401).json({ message: "not login" });
+            res.status(401).json({
+                success: false,
+                message: "Not logged in yet",
+            });
         }
     } catch (error) {
-        next(error);
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+            error: error.message,
+        });
     }
 };

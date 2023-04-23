@@ -6,12 +6,12 @@ const { DataTypes } = Sequelize;
 const Project = db.define(
     "projects",
     {
-        projectKey: {
+        project_key: {
             type: DataTypes.STRING,
             unique: true,
             allowNull: false,
         },
-        name_project: {
+        project_name: {
             type: DataTypes.STRING,
             allowNull: false,
             validate: {

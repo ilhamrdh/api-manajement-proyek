@@ -1,17 +1,18 @@
 import { Sequelize } from "sequelize";
 import db from "../configs/connection.js";
+import Project from "./Project.js";
 
 const { DataTypes } = Sequelize;
 
 const Sprint = db.define(
     "sprints",
     {
-        sprintKey: {
+        sprint_key: {
             type: DataTypes.STRING,
             unique: true,
             allowNull: false,
         },
-        name_sprint: {
+        sprint_name: {
             type: DataTypes.STRING,
             allowNull: false,
             validate: {
@@ -52,6 +53,13 @@ const Sprint = db.define(
                     args: [["not_start", "on_progress", "completed"]],
                     msg: "must be not_start, on_progress, or completed",
                 },
+            },
+        },
+        project_key: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            validate: {
+                notEmpty: true,
             },
         },
     },

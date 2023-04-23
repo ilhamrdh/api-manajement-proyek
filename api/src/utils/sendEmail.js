@@ -1,6 +1,6 @@
 import nodemailer from "nodemailer";
 
-const sendEmail = async (email, mailSubject, content, res, next) => {
+const sendEmail = async (email, mailSubject, content, res) => {
     try {
         let transporter = nodemailer.createTransport({
             service: "gmail",
@@ -34,7 +34,11 @@ const sendEmail = async (email, mailSubject, content, res, next) => {
             }
         });
     } catch (error) {
-        next(error);
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+            error: error.message,
+        });
     }
 };
 

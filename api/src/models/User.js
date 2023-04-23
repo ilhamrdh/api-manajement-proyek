@@ -1,13 +1,12 @@
 import { Sequelize } from "sequelize";
 import db from "../configs/connection.js";
-import Organization from "./Organization.js";
 
 const { DataTypes } = Sequelize;
 
 const User = db.define(
     "users",
     {
-        userKey: {
+        user_key: {
             type: DataTypes.STRING,
             unique: true,
             allowNull: true,
@@ -54,13 +53,17 @@ const User = db.define(
         email_token: {
             type: DataTypes.STRING,
         },
+        org_key: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            validate: {
+                notEmpty: true,
+            },
+        },
     },
     {
         freezeTableName: true,
     }
 );
-
-// Organization.hasMany(User, { foreignKey: "org_key", sourceKey: "orgKey" });
-// User.belongsTo(Organization, { foreignKey: "org_key" });
 
 export default User;

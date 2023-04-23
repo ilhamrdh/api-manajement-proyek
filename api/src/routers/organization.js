@@ -1,9 +1,13 @@
 import express from "express";
-import { anggotaOrganization } from "../controllers/organization.js";
+import {
+    findOrganization,
+    listOrganization,
+} from "../controllers/organization.js";
 import { checkAuth } from "../middleware/AuthUser.js";
 
 const router = express.Router();
 
-router.get("/anggota/:orgKey", checkAuth, anggotaOrganization);
+router.get("/members", checkAuth, listOrganization);
+router.get("/:org_key", checkAuth, findOrganization);
 
 export default router;

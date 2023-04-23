@@ -4,29 +4,6 @@ import { User } from "../models/index.js";
 import sendEmail from "../utils/sendEmail.js";
 import { Sequelize } from "sequelize";
 
-export const verify = async (req, res, next) => {
-    try {
-        const user = await User.findOne({
-            where: { email_token: req.query.token },
-        });
-        if (user) {
-            user.email_token = null;
-            user.verified = true;
-            await user.save((err) => {
-                if (err) {
-                    res.status(500).json({ message: err });
-                    return;
-                }
-            });
-            res.status(200).json({ message: "sucess verified", data: user });
-        } else {
-            res.status(400).json({ message: "email is not verified" });
-        }
-    } catch (error) {
-        next(error);
-    }
-};
-
 export const inviteUser = async (req, res, next) => {
     const { email, role } = req.body;
     try {
@@ -45,7 +22,7 @@ export const inviteUser = async (req, res, next) => {
             where: { id: req.userId },
         });
         const user = await User.create({
-            userKey: crypto.randomBytes(10).toString("hex"),
+            user_key: crypto.randomBytes(10).toString("hex"),
             username: email,
             email: email.toLowerCase(),
             password: "panding",
@@ -68,14 +45,49 @@ export const inviteUser = async (req, res, next) => {
         `;
         sendEmail(email, subject, content);
         res.status(201).json({
-            message: "Successfuly invited",
-            data: {
-                invitation_user: invitationUser,
-                invite_user: user,
-            },
+            message: "Successed invite",
+            data: user.email,
         });
     } catch (error) {
-        next(error);
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+            error: error.message,
+        });
+    }
+};
+
+export const verify = async (req, res, next) => {
+    try {
+        const user = await User.findOne({
+            where: { email_token: req.query.token },
+        });
+        if (user) {
+            user.email_token = null;
+            user.verified = true;
+            await user.save((err) => {
+                if (err) {
+                    res.status(500).json({ message: err });
+                    return;
+                }
+            });
+            res.status(200).json({
+                success: true,
+                message: "successed verified",
+                data: user,
+            });
+        } else {
+            res.status(400).json({
+                success: false,
+                message: "Already verified",
+            });
+        }
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+            error: error.message,
+        });
     }
 };
 
@@ -91,7 +103,10 @@ export const verifyInvite = async (req, res, next) => {
             },
         });
         if (checkUsername) {
-            return res.status(409).json({ message: "username already" });
+            return res.status(409).json({
+                success: false,
+                message: "Username already",
+            });
         }
         const user = await User.findOne({
             where: { email_token: req.query.continue },
@@ -99,25 +114,99 @@ export const verifyInvite = async (req, res, next) => {
         const salt = bcrypt.genSaltSync(10);
         const hash = bcrypt.hashSync(password, salt);
         if (user) {
-            user.userKey = `USER-${user.id}`;
+            user.user_key = `USER-${user.id}`;
             user.username = username;
             user.password = hash;
             user.email_token = null;
             user.verified = true;
             await user.save((err) => {
                 if (err) {
-                    res.status(500).json({ message: err });
+                    res.status(500).json({ success: false, message: err });
                     return;
                 }
             });
-            res.status(200).json({
-                message: "successfuly created account",
+            res.status(201).json({
+                success: true,
+                message: "Successed created account",
                 data: user,
             });
         } else {
-            res.status(400).json({ message: "token is not found" });
+            res.status(400).json({
+                success: false,
+                message: "Already verified",
+            });
         }
     } catch (error) {
-        next(error);
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+            error: error.message,
+        });
+    }
+};
+
+export const changePassword = async (req, res, next) => {
+    const { password } = req.body;
+    const id = req.userId;
+    try {
+        const salt = bcrypt.genSaltSync(10);
+        const hash = bcrypt.hashSync(password, salt);
+        const user = await User.findOne({
+            where: { id: id },
+        });
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        await user.update({ password: hash });
+        res.clearCookie("access_token");
+        res.status(200).json({
+            success: true,
+            message: "Password changed successfully",
+            data: "Please login again",
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+            error: error.message,
+        });
+    }
+};
+export const changeEmail = async (req, res, next) => {
+    const { email } = req.body;
+    const id = req.userId;
+    try {
+        const user = await User.findOne({
+            where: { id: id },
+        });
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        const checkEmail = await User.findOne({
+            where: {
+                email: Sequelize.where(
+                    Sequelize.fn("LOWER", Sequelize.col("email")),
+                    Sequelize.fn("LOWER", email)
+                ),
+            },
+        });
+        if (checkEmail) {
+            return res.status(409).json({
+                success: false,
+                message: "Email already",
+            });
+        }
+        await user.update({ email: email });
+        res.status(200).json({
+            success: true,
+            message: "Email changed successfully",
+            data: user.email,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+            error: error.message,
+        });
     }
 };
