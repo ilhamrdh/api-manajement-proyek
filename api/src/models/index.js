@@ -85,12 +85,12 @@ Sprint.belongsTo(Project, {
 });
 
 Task.belongsTo(User, {
-    as: "assignee_user",
+    as: "assignee_task",
     foreignKey: "assignee",
     targetKey: "user_key",
 });
 Task.belongsTo(User, {
-    as: "reporter_user",
+    as: "reporter_task",
     foreignKey: "reporter",
     targetKey: "user_key",
 });
@@ -117,9 +117,18 @@ TaskAttachement.belongsTo(User, {
     targetKey: "user_key",
 });
 
+Task.hasMany(TaskCommentHistory, {
+    as: "commnet_task",
+    foreignKey: "task_key",
+    sourceKey: "task_key",
+});
 TaskCommentHistory.belongsTo(Task, {
     foreignKey: "task_key",
     targetKey: "task_key",
+});
+User.hasMany(TaskCommentHistory, {
+    foreignKey: "user_key",
+    sourceKey: "user_key",
 });
 TaskCommentHistory.belongsTo(User, {
     foreignKey: "user_key",

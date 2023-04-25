@@ -6,7 +6,7 @@ import {
     findMemberTeam,
     teamProject,
 } from "../controllers/team.js";
-import { checkAuth } from "../middleware/AuthUser.js";
+import { checkAuth } from "../middleware/authUser.js";
 
 const router = express.Router();
 

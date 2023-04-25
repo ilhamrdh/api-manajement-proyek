@@ -3,7 +3,7 @@ import {
     findOrganization,
     listOrganization,
 } from "../controllers/organization.js";
-import { checkAuth } from "../middleware/AuthUser.js";
+import { checkAuth } from "../middleware/authUser.js";
 
 const router = express.Router();
 

@@ -1,5 +1,5 @@
 import express from "express";
-import { checkAuth } from "../middleware/AuthUser.js";
+import { checkAuth } from "../middleware/authUser.js";
 import {
     createWorkspace,
     findTeam,
