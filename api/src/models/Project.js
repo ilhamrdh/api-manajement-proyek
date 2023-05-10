@@ -7,12 +7,12 @@ const Project = db.define(
     "projects",
     {
         project_key: {
-            type: DataTypes.STRING,
+            type: DataTypes.STRING(10),
             unique: true,
             allowNull: false,
         },
         project_name: {
-            type: DataTypes.STRING,
+            type: DataTypes.STRING(100),
             allowNull: false,
             validate: {
                 notEmpty: true,

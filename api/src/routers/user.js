@@ -13,7 +13,7 @@ const router = express.Router();
 router.get("/verify-email", verify);
 router.post("/verify-invite", verifyInvite);
 router.post("/invite-user", checkAuth, inviteUser);
-router.patch("/password", checkAuth, changePassword);
-router.patch("/email", checkAuth, changeEmail);
+router.put("/password", checkAuth, changePassword);
+router.put("/email", checkAuth, changeEmail);
 
 export default router;

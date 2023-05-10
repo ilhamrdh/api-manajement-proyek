@@ -11,11 +11,10 @@ import {
 import { key } from "../utils/generateKey.js";
 
 export const createTeam = async (req, res, next) => {
-    const { team_name } = req.body;
-    const keyWorkspace = req.params.work_key;
+    const { team_name, work_key } = req.body;
     try {
         const workspace = await Workspace.findOne({
-            where: { work_key: keyWorkspace },
+            where: { work_key: work_key },
         });
         if (!workspace) {
             return res.status(404).json({
@@ -26,7 +25,7 @@ export const createTeam = async (req, res, next) => {
         const team = await Team.create({
             team_key: "T-",
             team_name: team_name,
-            work_key: keyWorkspace,
+            work_key: work_key,
         });
         await team.update({ team_key: `${key(team_name)}-${team.id}` });
         res.status(201).json({
@@ -47,24 +46,6 @@ export const findAllTeam = async (req, res, next) => {
     try {
         const teams = await Team.findAll({
             attributes: ["team_key", "team_name", "work_key"],
-            include: [
-                {
-                    model: Workspace,
-                    attributes: ["work_key", "workspace_name"],
-                    include: [
-                        {
-                            model: Organization,
-                            attributes: ["organization_name"],
-                            include: [
-                                {
-                                    model: User,
-                                    attributes: ["username"],
-                                },
-                            ],
-                        },
-                    ],
-                },
-            ],
         });
         res.status(200).json({
             success: true,
@@ -81,8 +62,7 @@ export const findAllTeam = async (req, res, next) => {
 };
 
 export const addMemberTeam = async (req, res, next) => {
-    const { role, username } = req.body;
-    const team_key = req.params.team_key;
+    const { role, username, team_key } = req.body;
     try {
         const user = await User.findOne({
             where: {
@@ -92,16 +72,16 @@ export const addMemberTeam = async (req, res, next) => {
                 ),
             },
         });
-        const team = await Team.findOne({
-            where: { team_key: team_key },
-            include: [{ model: Workspace }],
-        });
         if (!user) {
             return res.status(404).json({
                 success: false,
                 message: "User not found",
             });
         }
+        const team = await Team.findOne({
+            where: { team_key: team_key },
+            include: [{ model: Workspace }],
+        });
         const members = await TeamMember.findOne({
             where: { user_key: user.user_key },
         });
@@ -122,12 +102,18 @@ export const addMemberTeam = async (req, res, next) => {
             res.status(201).json({
                 success: true,
                 message: "Successed add member",
-                data: { member: member },
+                data: {
+                    member: {
+                        user_key: member.user_key,
+                        role: member.role,
+                        team_key: member.team_key,
+                    },
+                },
             });
         } else {
             res.status(400).json({
                 success: false,
-                message: `${username} is not eligible to become a member of team ${team.team_name}`,
+                message: `${members.username} is not eligible to become a member of team ${team.team_name}`,
             });
         }
     } catch (error) {
@@ -183,8 +169,7 @@ export const findMemberTeam = async (req, res, next) => {
 };
 
 export const teamProject = async (req, res, next) => {
-    const { project_name } = req.body;
-    const team_key = req.params.team_key;
+    const { project_name, team_key } = req.body;
     try {
         const project = await Project.findOne({
             where: {
@@ -194,15 +179,15 @@ export const teamProject = async (req, res, next) => {
                 ),
             },
         });
-        const team = await Team.findOne({
-            where: { team_key: team_key },
-        });
         if (!project) {
             return res.status(404).json({
                 success: false,
                 message: "Project not found",
             });
         }
+        const team = await Team.findOne({
+            where: { team_key: team_key },
+        });
         if (!team) {
             return res.status(404).json({
                 success: false,

@@ -7,19 +7,19 @@ const Workspace = db.define(
     "workspaces",
     {
         work_key: {
-            type: DataTypes.STRING,
+            type: DataTypes.STRING(10),
             unique: true,
             allowNull: false,
         },
         workspace_name: {
-            type: DataTypes.STRING,
+            type: DataTypes.STRING(100),
             allowNull: false,
             validate: {
                 notEmpty: true,
             },
         },
         org_key: {
-            type: DataTypes.STRING,
+            type: DataTypes.STRING(10),
             allowNull: false,
             validate: {
                 notEmpty: true,

@@ -1,4 +1,5 @@
 import multer from "multer";
+import fs from "fs";
 
 const allowedExtensions = [".jpg", ".jpeg", ".png", ".gif"];
 
@@ -10,8 +11,15 @@ const upload = (fieldName) => {
             },
             filename: (req, file, cb) => {
                 const timestamp = new Date().getTime();
-                const filename = file.originalname;
-                cb(null, `${timestamp}-${filename}`);
+                const originalname = file.originalname;
+                const filename = `${timestamp}-${originalname}`;
+                const filepath = `public/${fieldName}s/${filename}`;
+                fs.access(filepath, (err) => {
+                    if (!err) {
+                        fs.unlinkSync(filepath);
+                    }
+                    cb(null, filename);
+                });
             },
         }),
         limits: {

@@ -1,5 +1,6 @@
 import { Sequelize } from "sequelize";
 import multer from "multer";
+import fs from "fs";
 import {
     Task,
     TaskAttachement,
@@ -137,14 +138,17 @@ export const taskAttachment = (req, res, next) => {
         } else if (err) {
             if (err.code === "FILE_TYPE_NOT_ALLOWED") {
                 return res.status(400).json({
+                    success: false,
                     message: "File type not allowed",
                 });
             }
-            return res.status(400).json({ message: err.message });
+            return res.status(400).json({
+                success: false,
+                message: err.message,
+            });
         }
         const { originalname, filename, path, mimetype, size } = req.file;
-        const task_key = req.params.task_key;
-        const { attach_name } = req.body;
+        const { attach_name, task_key } = req.body;
         try {
             const user = await User.findOne({
                 where: { id: req.userId },
@@ -177,9 +181,31 @@ export const taskAttachment = (req, res, next) => {
     });
 };
 
+export const deletedAttachment = async (req, res, next) => {
+    const { attachId } = req.params.attachId;
+    try {
+        const attachment = await TaskAttachement.findOne(attachId);
+        if (!attachment) {
+            return res.status(404).json({ message: "Attachment not found" });
+        }
+        const filePath = attachment.attach_file;
+        fs.unlinkSync(filePath);
+        await attachment.destroy();
+        res.status(200).json({
+            success: true,
+            message: "Attachment deleted successfully",
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+            error: error.message,
+        });
+    }
+};
+
 export const commentTask = async (req, res, next) => {
-    const task_key = req.params.task_key;
-    const { type, action } = req.body;
+    const { type, action, task_key } = req.body;
     try {
         const user = await User.findOne({
             where: { id: req.userId },
@@ -199,7 +225,14 @@ export const commentTask = async (req, res, next) => {
         res.status(200).json({
             success: true,
             message: "Successed",
-            data: comment,
+            data: {
+                comment: {
+                    type: comment.type,
+                    action: comment.action,
+                    task: task.task_name,
+                    user: user.username,
+                },
+            },
         });
     } catch (error) {
         res.status(500).json({

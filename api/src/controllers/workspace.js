@@ -1,5 +1,5 @@
 import { Sequelize } from "sequelize";
-import { User, Workspace, Organization, Team } from "../models/index.js";
+import { User, Workspace, Organization, Team, TeamMember } from "../models/index.js";
 import { key } from "../utils/generateKey.js";
 
 export const createWorkspace = async (req, res, next) => {
@@ -70,18 +70,6 @@ export const listWorkspace = async (req, res, next) => {
     try {
         const workspaces = await Workspace.findAll({
             attributes: ["work_key", "workspace_name"],
-            include: [
-                {
-                    model: Organization,
-                    attributes: ["org_key", "organization_name"],
-                    include: [
-                        {
-                            model: User,
-                            attributes: ["username", "email", "role"],
-                        },
-                    ],
-                },
-            ],
         });
         if (!workspaces) {
             return res.status(404).json({
@@ -102,7 +90,7 @@ export const listWorkspace = async (req, res, next) => {
         });
     }
 };
-export const findWorkspace = async (req, res, next) => {
+export const findMemberWorkspace = async (req, res, next) => {
     const work_key = req.params.work_key;
     try {
         const workspace = await Workspace.findOne({
@@ -145,7 +133,7 @@ export const findWorkspace = async (req, res, next) => {
         });
     }
 };
-export const findTeam = async (req, res, next) => {
+export const findWorkspace = async (req, res, next) => {
     const work_key = req.params.work_key;
     try {
         const workspace = await Workspace.findOne({
@@ -160,6 +148,18 @@ export const findTeam = async (req, res, next) => {
                 {
                     model: Team,
                     attributes: ["team_key", "team_name"],
+                    include:[
+                        {
+                            model: TeamMember,
+                            attributes: ["member_key","role"],
+                            include: [
+                                {
+                                    model: User,
+                                    attributes: ["username"]
+                                }
+                            ]
+                        }
+                    ]
                 },
             ],
         });

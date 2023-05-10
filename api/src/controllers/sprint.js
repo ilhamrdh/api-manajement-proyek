@@ -4,14 +4,20 @@ import Sprint from "../models/Sprint.js";
 import { key } from "../utils/generateKey.js";
 
 export const createSprint = async (req, res, next) => {
-    const { sprint_name, duration, start_date, end_date, sprint_goal, status } =
-        req.body;
-    const keyProject = req.params.keyProject;
+    const {
+        sprint_name,
+        duration,
+        start_date,
+        end_date,
+        sprint_goal,
+        status,
+        project_key,
+    } = req.body;
     const project = await Project.findOne({
         where: {
             project_key: Sequelize.where(
                 Sequelize.fn("LOWER", Sequelize.col("project_key")),
-                Sequelize.fn("LOWER", keyProject)
+                Sequelize.fn("LOWER", project_key)
             ),
         },
     });
@@ -23,14 +29,14 @@ export const createSprint = async (req, res, next) => {
     }
     try {
         const sprint = await Sprint.create({
-            sprint_key: `${key(project.project_name)}`,
+            sprint_key: `P-`,
             sprint_name: sprint_name,
             duration: duration,
             start_date: start_date,
             end_date: end_date,
             sprint_goal: sprint_goal,
             status: status,
-            project_key: keyProject,
+            project_key: project_key,
         });
         await sprint.update({
             sprint_key: `${key(project.project_name)}-${sprint.id}`,

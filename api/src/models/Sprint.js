@@ -1,6 +1,5 @@
 import { Sequelize } from "sequelize";
 import db from "../configs/connection.js";
-import Project from "./Project.js";
 
 const { DataTypes } = Sequelize;
 
@@ -8,12 +7,12 @@ const Sprint = db.define(
     "sprints",
     {
         sprint_key: {
-            type: DataTypes.STRING,
+            type: DataTypes.STRING(10),
             unique: true,
             allowNull: false,
         },
         sprint_name: {
-            type: DataTypes.STRING,
+            type: DataTypes.STRING(100),
             allowNull: false,
             validate: {
                 notEmpty: true,
@@ -56,7 +55,7 @@ const Sprint = db.define(
             },
         },
         project_key: {
-            type: DataTypes.STRING,
+            type: DataTypes.STRING(10),
             allowNull: false,
             validate: {
                 notEmpty: true,

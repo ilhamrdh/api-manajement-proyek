@@ -1,16 +1,11 @@
-import express from "express";
-import cors from "cors";
-import db from "./configs/connection.js";
-import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
-import UserRouter from "./routers/user.js";
+import cors from "cors";
+import dotenv from "dotenv";
+import express from "express";
+import db from "./configs/connection.js";
 import AuthRouter from "./routers/auth.js";
+import UserRouter from "./routers/user.js";
 import OrgRouter from "./routers/organization.js";
-import WorkRouter from "./routers/workspace.js";
-import TeamRouter from "./routers/team.js";
-import ProjectRouter from "./routers/project.js";
-import SprintRouter from "./routers/sprint.js";
-import TaskRouter from "./routers/task.js";
 
 dotenv.config();
 
@@ -33,11 +28,6 @@ app.use((error, req, res, next) => {
 app.use("/api/auth", AuthRouter);
 app.use("/api/user", UserRouter);
 app.use("/api/organization", OrgRouter);
-app.use("/api/workspace", WorkRouter);
-app.use("/api/team", TeamRouter);
-app.use("/api/project", ProjectRouter);
-app.use("/api/sprint", SprintRouter);
-app.use("/api/task", TaskRouter);
 
 // db.sync({ force: false })
 //     .then(() => {

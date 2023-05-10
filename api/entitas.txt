@@ -2,6 +2,7 @@ user:
 	user_key(varchar(10))
 	org_key(varchar(10))
 	username(varchar(100))
+	photo(varchar)
 	email(varchar(50))
 	password(varchar(255))
 	role("admin","user)

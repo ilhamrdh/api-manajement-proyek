@@ -7,12 +7,12 @@ const User = db.define(
     "users",
     {
         user_key: {
-            type: DataTypes.STRING,
+            type: DataTypes.STRING(10),
             unique: true,
-            allowNull: true,
+            allowNull: false,
         },
         username: {
-            type: DataTypes.STRING,
+            type: DataTypes.STRING(100),
             allowNull: false,
             unique: true,
             validate: {
@@ -21,7 +21,7 @@ const User = db.define(
             },
         },
         email: {
-            type: DataTypes.STRING,
+            type: DataTypes.STRING(100),
             allowNull: false,
             validate: {
                 notEmpty: true,
@@ -36,11 +36,19 @@ const User = db.define(
             },
         },
         role: {
-            type: DataTypes.STRING,
+            type: DataTypes.ENUM,
+            values: ["admin", "user"],
+            defaultValue: "admin",
             allowNull: false,
             validate: {
-                notEmpty: false,
+                isIn: {
+                    args: [["admin", "user"]],
+                    msg: "must be admin, or user",
+                },
             },
+        },
+        photo: {
+            type: DataTypes.STRING,
         },
         verified: {
             type: DataTypes.BOOLEAN,
@@ -54,7 +62,7 @@ const User = db.define(
             type: DataTypes.STRING,
         },
         org_key: {
-            type: DataTypes.STRING,
+            type: DataTypes.STRING(10),
             allowNull: false,
             validate: {
                 notEmpty: true,

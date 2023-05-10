@@ -7,12 +7,12 @@ const Task = db.define(
     "tasks",
     {
         task_key: {
-            type: DataTypes.STRING,
+            type: DataTypes.STRING(10),
             unique: true,
             allowNull: false,
         },
         task_name: {
-            type: DataTypes.STRING,
+            type: DataTypes.STRING(100),
             allowNull: false,
             validate: {
                 notEmpty: true,
@@ -22,14 +22,14 @@ const Task = db.define(
             type: DataTypes.TEXT,
         },
         assignee: {
-            type: DataTypes.STRING,
+            type: DataTypes.STRING(10),
             allowNull: false,
             validate: {
                 notEmpty: true,
             },
         },
         reporter: {
-            type: DataTypes.STRING,
+            type: DataTypes.STRING(10),
             allowNull: false,
             validate: {
                 notEmpty: true,
@@ -44,7 +44,7 @@ const Task = db.define(
             },
         },
         parent_key: {
-            type: DataTypes.STRING,
+            type: DataTypes.STRING(10),
             defaultValue: "null",
         },
         flag: {
@@ -63,14 +63,14 @@ const VotedTask = db.define(
     "voted_tasks",
     {
         task_key: {
-            type: DataTypes.STRING,
+            type: DataTypes.STRING(10),
             allowNull: false,
             validate: {
                 notEmpty: true,
             },
         },
         user_key: {
-            type: DataTypes.STRING,
+            type: DataTypes.STRING(10),
             allowNull: false,
             validate: {
                 notEmpty: true,
@@ -84,7 +84,7 @@ const TaskAttachement = db.define(
     "task_attachment",
     {
         attach_name: {
-            type: DataTypes.STRING,
+            type: DataTypes.STRING(100),
             allowNull: false,
             validate: {
                 notEmpty: true,
@@ -94,14 +94,14 @@ const TaskAttachement = db.define(
             type: DataTypes.STRING,
         },
         upload_by: {
-            type: DataTypes.STRING,
+            type: DataTypes.STRING(10),
             allowNull: false,
             validate: {
                 notEmpty: true,
             },
         },
         task_key: {
-            type: DataTypes.STRING,
+            type: DataTypes.STRING(10),
             allowNull: false,
             validate: {
                 notEmpty: true,
@@ -131,14 +131,14 @@ const TaskCommentHistory = db.define(
             },
         },
         task_key: {
-            type: DataTypes.STRING,
+            type: DataTypes.STRING(10),
             allowNull: false,
             validate: {
                 notEmpty: true,
             },
         },
         user_key: {
-            type: DataTypes.STRING,
+            type: DataTypes.STRING(10),
             allowNull: false,
             validate: {
                 notEmpty: true,
@@ -148,4 +148,4 @@ const TaskCommentHistory = db.define(
     { freezeTableName: true }
 );
 
-export { Task, VotedTask, TaskAttachement, TaskCommentHistory };
+export { Task, TaskAttachement, TaskCommentHistory, VotedTask };

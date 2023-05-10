@@ -7,12 +7,12 @@ const Organization = db.define(
     "organizations",
     {
         org_key: {
-            type: DataTypes.STRING,
+            type: DataTypes.STRING(10),
             unique: true,
             allowNull: false,
         },
         organization_name: {
-            type: DataTypes.STRING,
+            type: DataTypes.STRING(100),
             allowNull: false,
             validate: {
                 notEmpty: true,
