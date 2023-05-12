@@ -114,7 +114,6 @@ export const verifyInvite = async (req, res, next) => {
         }
         const { path } = req.file;
         const { username, password } = req.body;
-        console.log("=======> PATH : ", path);
         try {
             const checkUsername = await User.findOne({
                 where: {
