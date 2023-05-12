@@ -1,10 +1,36 @@
 import bcrypt from "bcrypt";
 import crypto from "crypto";
+import fs from "fs";
 import { Sequelize } from "sequelize";
 import { User } from "../models/index.js";
 import sendEmail from "../utils/sendEmail.js";
 import upload from "../middleware/Multer.js";
 import multer from "multer";
+
+export const Me = async (req, res, next) => {
+    try {
+        const user = await User.findOne({
+            attributes: ["username", "email", "role"],
+            where: {
+                id: req.userId,
+            },
+        });
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        res.status(200).json({
+            success: true,
+            message: "Profile",
+            data: user,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+            error: error.message,
+        });
+    }
+};
 
 export const inviteUser = async (req, res, next) => {
     const { email, role } = req.body;
@@ -124,6 +150,7 @@ export const verifyInvite = async (req, res, next) => {
                 },
             });
             if (checkUsername) {
+                fs.unlinkSync(path);
                 return res.status(409).json({
                     success: false,
                     message: "Username already",
@@ -159,6 +186,7 @@ export const verifyInvite = async (req, res, next) => {
                 });
             }
         } catch (error) {
+            fs.unlinkSync(path);
             res.status(500).json({
                 success: false,
                 message: "Internal Server Error",

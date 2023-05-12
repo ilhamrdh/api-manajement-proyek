@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
+import fs from "fs";
 import { Sequelize } from "sequelize";
 import { Organization, User } from "../models/index.js";
 import sendEmail from "../utils/sendEmail.js";
@@ -38,6 +39,7 @@ export const register = async (req, res, next) => {
                 },
             });
             if (checkUsername) {
+                fs.unlinkSync(path);
                 return res.status(409).json({
                     success: false,
                     message: "username already",
@@ -52,6 +54,7 @@ export const register = async (req, res, next) => {
                 },
             });
             if (checkEmail) {
+                fs.unlinkSync(path);
                 return res.status(409).json({
                     success: false,
                     message: "Email already",
@@ -98,6 +101,7 @@ export const register = async (req, res, next) => {
                 data: user.email,
             });
         } catch (error) {
+            fs.unlinkSync(path);
             res.status(500).json({
                 success: false,
                 message: "Internal Server Error",
@@ -149,31 +153,6 @@ export const login = async (req, res, next) => {
                 message: "Login successfully",
                 username: user.username,
             });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: "Internal Server Error",
-            error: error.message,
-        });
-    }
-};
-
-export const Me = async (req, res, next) => {
-    try {
-        const user = await User.findOne({
-            attributes: ["username", "email", "role"],
-            where: {
-                id: req.userId,
-            },
-        });
-        if (!user) {
-            return res.status(404).json({ message: "User not found" });
-        }
-        res.status(200).json({
-            success: true,
-            message: "Profile",
-            data: user,
-        });
     } catch (error) {
         res.status(500).json({
             success: false,

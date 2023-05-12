@@ -172,6 +172,7 @@ export const taskAttachment = (req, res, next) => {
                 },
             });
         } catch (error) {
+            fs.unlinkSync(path)
             res.status(500).json({
                 success: false,
                 message: "Internal Server Error",

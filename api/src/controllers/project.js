@@ -3,7 +3,7 @@ import { Project, Team, TeamHasProject } from "../models/index.js";
 import { key } from "../utils/generateKey.js";
 
 export const createProject = async (req, res, next) => {
-    const { project_name } = req.body;
+    const { project_name, client_key, level } = req.body;
     try {
         const checkProject = await Project.findOne({
             where: {
@@ -22,6 +22,8 @@ export const createProject = async (req, res, next) => {
         const project = await Project.create({
             project_key: `P`,
             project_name: project_name,
+            level: level,
+            client_key: client_key,
         });
         await project.update({
             project_key: `${key(project_name)}-${project.id}`,

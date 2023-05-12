@@ -1,5 +1,11 @@
 import { Sequelize } from "sequelize";
-import { User, Workspace, Organization, Team, TeamMember } from "../models/index.js";
+import {
+    User,
+    Workspace,
+    Organization,
+    Team,
+    TeamMember,
+} from "../models/index.js";
 import { key } from "../utils/generateKey.js";
 
 export const createWorkspace = async (req, res, next) => {
@@ -29,6 +35,8 @@ export const createWorkspace = async (req, res, next) => {
         });
     }
 };
+export const editWorkspace = async (req, res, next) => {};
+
 export const inviteToWorkspace = async (req, res, next) => {
     const { username } = req.body;
     try {
@@ -133,53 +141,3 @@ export const findMemberWorkspace = async (req, res, next) => {
         });
     }
 };
-export const findWorkspace = async (req, res, next) => {
-    const work_key = req.params.work_key;
-    try {
-        const workspace = await Workspace.findOne({
-            where: {
-                work_key: Sequelize.where(
-                    Sequelize.fn("LOWER", Sequelize.col("work_key")),
-                    Sequelize.fn("LOWER", work_key)
-                ),
-            },
-            attributes: ["work_key", "workspace_name"],
-            include: [
-                {
-                    model: Team,
-                    attributes: ["team_key", "team_name"],
-                    include:[
-                        {
-                            model: TeamMember,
-                            attributes: ["member_key","role"],
-                            include: [
-                                {
-                                    model: User,
-                                    attributes: ["username"]
-                                }
-                            ]
-                        }
-                    ]
-                },
-            ],
-        });
-        if (!workspace) {
-            return res.status(404).json({
-                success: false,
-                message: "Workspace not found",
-            });
-        }
-        res.status(200).json({
-            success: true,
-            message: "Successed",
-            data: workspace,
-        });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: "Internal Server Error",
-            error: error.message,
-        });
-    }
-};
-export const editWorkspace = async (req, res, next) => {};

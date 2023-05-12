@@ -125,39 +125,46 @@ export const addMemberTeam = async (req, res, next) => {
     }
 };
 
-export const findMemberTeam = async (req, res, next) => {
-    const team_key = req.params.team_key;
+export const findTeamWorkspace = async (req, res, next) => {
+    const work_key = req.params.work_key;
     try {
-        const team = await Team.findOne({
+        const workspace = await Workspace.findOne({
             where: {
-                team_key: Sequelize.where(
-                    Sequelize.fn("LOWER", Sequelize.col("team_key")),
-                    Sequelize.fn("LOWER", team_key)
+                work_key: Sequelize.where(
+                    Sequelize.fn("LOWER", Sequelize.col("work_key")),
+                    Sequelize.fn("LOWER", work_key)
                 ),
             },
-            attributes: ["team_key"],
-        });
-        if (!team) {
-            return res.status(400).json({
-                success: false,
-                message: "Team not found",
-            });
-        }
-        const teamMember = await TeamMember.findAll({
-            where: { team_key: team.team_key },
-            attributes: ["team_key", "role"],
+            attributes: ["work_key", "workspace_name"],
             include: [
                 {
-                    model: User,
-                    attributes: ["username"],
+                    model: Team,
+                    attributes: ["team_key", "team_name"],
+                    include: [
+                        {
+                            model: TeamMember,
+                            attributes: ["member_key", "role"],
+                            include: [
+                                {
+                                    model: User,
+                                    attributes: ["username"],
+                                },
+                            ],
+                        },
+                    ],
                 },
             ],
         });
-
+        if (!workspace) {
+            return res.status(404).json({
+                success: false,
+                message: "Workspace not found",
+            });
+        }
         res.status(200).json({
             success: true,
             message: "Successed",
-            data: teamMember,
+            data: workspace,
         });
     } catch (error) {
         res.status(500).json({
@@ -168,7 +175,7 @@ export const findMemberTeam = async (req, res, next) => {
     }
 };
 
-export const teamProject = async (req, res, next) => {
+export const addProjectTeam = async (req, res, next) => {
     const { project_name, team_key } = req.body;
     try {
         const project = await Project.findOne({
@@ -211,6 +218,49 @@ export const teamProject = async (req, res, next) => {
             success: true,
             message: "Team has been add project",
             data: teamProject,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+            error: error.message,
+        });
+    }
+};
+
+export const findTeamByKey = async (req, res, next) => {
+    const team_key = req.params.team_key;
+    try {
+        const team = await Team.findOne({
+            where: {
+                team_key: Sequelize.where(
+                    Sequelize.fn("LOWER", Sequelize.col("team_key")),
+                    Sequelize.fn("LOWER", team_key)
+                ),
+            },
+            attributes: ["team_key"],
+        });
+        if (!team) {
+            return res.status(400).json({
+                success: false,
+                message: "Team not found",
+            });
+        }
+        const teamMember = await TeamMember.findAll({
+            where: { team_key: team.team_key },
+            attributes: ["team_key", "role"],
+            include: [
+                {
+                    model: User,
+                    attributes: ["username"],
+                },
+            ],
+        });
+
+        res.status(200).json({
+            success: true,
+            message: "Successed",
+            data: teamMember,
         });
     } catch (error) {
         res.status(500).json({
