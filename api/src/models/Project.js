@@ -18,6 +18,24 @@ const Project = db.define(
                 notEmpty: true,
             },
         },
+        level: {
+            type: DataTypes.ENUM,
+            values: ["low", "medium", "high"],
+            allowNull: false,
+            validate: {
+                isIn: {
+                    args: [["low", "medium", "high"]],
+                    msg: "must be low, medium, or high",
+                },
+            },
+        },
+        client_key: {
+            type: DataTypes.STRING(10),
+            allowNull: false,
+            validate: {
+                notEmpty: true,
+            },
+        },
     },
     {
         freezeTableName: true,

@@ -21,15 +21,40 @@ const Task = db.define(
         task_description: {
             type: DataTypes.TEXT,
         },
-        assignee: {
-            type: DataTypes.STRING(10),
+        level: {
+            type: DataTypes.ENUM,
+            values: ["low", "medium", "high"],
+            allowNull: false,
+            validate: {
+                isIn: {
+                    args: [["low", "medium", "high"]],
+                    msg: "must be low, medium, or high",
+                },
+            },
+        },
+        optimistic_time: {
+            type: DataTypes.FLOAT(4),
             allowNull: false,
             validate: {
                 notEmpty: true,
             },
         },
-        reporter: {
-            type: DataTypes.STRING(10),
+        mostlikely_time: {
+            type: DataTypes.FLOAT(4),
+            allowNull: false,
+            validate: {
+                notEmpty: true,
+            },
+        },
+        pessimistic_time: {
+            type: DataTypes.FLOAT(4),
+            allowNull: false,
+            validate: {
+                notEmpty: true,
+            },
+        },
+        status_key: {
+            type: DataTypes.STRING,
             allowNull: false,
             validate: {
                 notEmpty: true,
@@ -51,6 +76,101 @@ const Task = db.define(
             type: DataTypes.BOOLEAN,
             allowNull: false,
             defaultValue: "false",
+            validate: {
+                notEmpty: true,
+            },
+        },
+        reporter: {
+            type: DataTypes.STRING(10),
+            allowNull: false,
+            validate: {
+                notEmpty: true,
+            },
+        },
+    },
+    { freezeTableName: true }
+);
+
+const TaskAssigner = db.define(
+    "task_assigner",
+    {
+        task_key: {
+            type: DataTypes.STRING(10),
+            allowNull: false,
+            validate: {
+                notEmpty: true,
+            },
+        },
+        assignee: {
+            type: DataTypes.STRING(10),
+            allowNull: false,
+            validate: {
+                notEmpty: true,
+            },
+        },
+    },
+    { freezeTableName: true }
+);
+
+const TaskWatcher = db.define(
+    "task_watcher",
+    {
+        task_key: {
+            type: DataTypes.STRING(10),
+            allowNull: false,
+            validate: {
+                notEmpty: true,
+            },
+        },
+        watcher_key: {
+            type: DataTypes.STRING(10),
+            allowNull: false,
+            validate: {
+                notEmpty: true,
+            },
+        },
+    },
+    { freezeTableName: true }
+);
+
+const TaskStatus = db.define(
+    "task_status",
+    {
+        status_key: {
+            type: DataTypes.STRING(10),
+            unique: true,
+            allowNull: false,
+        },
+        name: {
+            type: DataTypes.STRING(30),
+            allowNull: false,
+            validate: {
+                notEmpty: true,
+            },
+        },
+        description: {
+            type: DataTypes.STRING(255),
+        },
+    },
+    { freezeTableName: true }
+);
+
+const TaskActivities = db.define(
+    "task_activities",
+    {
+        task_key: {
+            type: DataTypes.STRING(10),
+            allowNull: false,
+            validate: {
+                notEmpty: true,
+            },
+        },
+        activity: {
+            type: DataTypes.STRING,
+        },
+        user_key: {
+            type: DataTypes.STRING(10),
+            allowNull: false,
             validate: {
                 notEmpty: true,
             },
@@ -148,4 +268,13 @@ const TaskCommentHistory = db.define(
     { freezeTableName: true }
 );
 
-export { Task, TaskAttachement, TaskCommentHistory, VotedTask };
+export {
+    Task,
+    TaskAssigner,
+    TaskWatcher,
+    TaskStatus,
+    TaskActivities,
+    TaskAttachement,
+    TaskCommentHistory,
+    VotedTask,
+};

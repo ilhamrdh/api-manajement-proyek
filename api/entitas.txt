@@ -34,26 +34,54 @@ team_has_project:
 project:
 	key(varchar(10))
 	name(varchar(100))
+	level(enum(low/medium/high))
+	client_key(varchar(10))
 
 sprints:
 	sprint_key(varchar(10))
-	project_key(varchar(10))
 	sprint_name(varchar(50))
 	duration(int(11))
 	start_date(date)
 	end_date(date) | (otomatis kalau duration != custom)
 	sprint_goal(text)
 	status(enum['not_start','on_progress','completed'])
+	level(enum(low/medium/high))
+	project_key(varchar(10))
 
 tasks:
 	task_key(varchar(10))
 	task_name(varchar(100))
 	task_description(text)
-	assigne(relation to member_key)(varchar(10))
-	reporter(relation to member_key)(varchar(10))
+	level(enum(low/medium/high))
+	status_key(varchar(10))
+	optimistic_time(float(4))
+	mostlikely_time(float(4))
+	pessimistic_time(float(4))
 	status(varchar(100))(default: backlog)
 	parent_key(varchar(10))(default:null)
 	flag(boolean)
+	reporter(relation to member_key)(varchar(10))
+
+task_assigner:
+	id
+	task_key(varchar(10))
+	assigne_key/user_key(varchar(10))
+
+task_watcher:
+	id
+	task_key(varchar(10))
+	watcher_key/user_key(varchar(10))
+
+task_status:
+	status_key(varchar(10))
+	name(varchar(30))
+	description(varchar(255))
+
+task_activities:
+	id
+	task_key(varchar(10))
+	activity(varchar(255))
+	user_key(varchar(10))
 
 voted_tasks:
 	id
@@ -75,3 +103,15 @@ task_comment_history:
 	action(text)
 	user_id(relation to member_key)(varchar(10))
 	created_at(datetime)
+
+notifications:
+	id
+	values(varchar(255))
+	for_user_id(varchar(10))
+
+
+clients:
+	client_key(varchar(10))
+	name(varchar(50))
+	description(varchar(255))
+	avatar/photo(varchar(255))

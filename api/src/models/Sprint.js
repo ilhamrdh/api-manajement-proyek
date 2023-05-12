@@ -54,6 +54,17 @@ const Sprint = db.define(
                 },
             },
         },
+        level: {
+            type: DataTypes.ENUM,
+            values: ["low", "medium", "high"],
+            allowNull: false,
+            validate: {
+                isIn: {
+                    args: [["low", "medium", "high"]],
+                    msg: "must be low, medium, or high",
+                },
+            },
+        },
         project_key: {
             type: DataTypes.STRING(10),
             allowNull: false,
