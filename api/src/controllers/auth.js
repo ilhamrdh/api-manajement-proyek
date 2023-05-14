@@ -95,7 +95,7 @@ export const register = async (req, res, next) => {
                             You're nearly there!</h1>
                         <p style="color:#091e42;line-height:20px;margin-top:12px">Hi ${username},</p>
                         <p style="color:#091e42;line-height:20px;margin-top:12px">Please verify your mail to continue...</p>
-                        <a href="http://localhost:9000/api/users/verify-email?token=${user.email_token}"
+                        <a href="http://localhost:9000/api/user/verify-email?token=${user.email_token}"
                             style="box-sizing:border-box;border-radius:3px;border-width:0;border:none;display:inline-flex;font-style:normal;font-size:inherit;line-height:24px;margin:0;outline:none;padding:4px 12px;text-align:center;vertical-align:middle;white-space:nowrap;text-decoration:none;background:#0052cc;color:#ffffff;">
                             Verify your email</a>
                     </div>
