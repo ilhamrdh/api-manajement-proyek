@@ -27,8 +27,11 @@ export const register = async (req, res, next) => {
                 message: err.message,
             });
         }
+        let path;
+        if (req.file != undefined) {
+            path = req.file;
+        }
         const { username, email, password, role } = req.body;
-        const { path } = req.file;
         try {
             const checkUsername = await User.findOne({
                 where: {
@@ -39,7 +42,9 @@ export const register = async (req, res, next) => {
                 },
             });
             if (checkUsername) {
-                fs.unlinkSync(path);
+                if (req.file != undefined) {
+                    fs.unlinkSync(req.file.path);
+                }
                 return res.status(409).json({
                     success: false,
                     message: "username already",
@@ -54,7 +59,9 @@ export const register = async (req, res, next) => {
                 },
             });
             if (checkEmail) {
-                fs.unlinkSync(path);
+                if (req.file != undefined) {
+                    fs.unlinkSync(req.file.path);
+                }
                 return res.status(409).json({
                     success: false,
                     message: "Email already",
@@ -73,12 +80,12 @@ export const register = async (req, res, next) => {
                 email: email.toLowerCase(),
                 password: hash,
                 role: role,
-                photo: path,
                 email_token: crypto.randomBytes(64).toString("hex"),
                 org_key: organization.org_key,
             });
             await user.update({
                 user_key: `USER-${user.id}`,
+                photo: req.file !== undefined ? req.file.path : null,
             });
             let subject = "Verify your email";
             let content = `
@@ -101,7 +108,9 @@ export const register = async (req, res, next) => {
                 data: user.email,
             });
         } catch (error) {
-            fs.unlinkSync(path);
+            if (req.file != undefined) {
+                fs.unlinkSync(req.file.path);
+            }
             res.status(500).json({
                 success: false,
                 message: "Internal Server Error",
